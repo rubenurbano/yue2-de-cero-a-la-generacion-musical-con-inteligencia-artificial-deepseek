@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YuE2 · Tutorial completo para principiantes</title>
+<style>
+/* ==========================================================================
+   YuE2 Tutorial — CSS principal
+   ========================================================================== */
+:root{
+  --bg:#0a0e1a;
+  --card:#0f172a;
+  --card2:#111c33;
+  --line:#1e3a5f;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+  --accent2:#00d4ff;
+  --violet:#a855f7;
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --err:#ef4444;
+  --radius:14px;
+  --fs:16px;
+  --navh:58px;
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+}
+[data-theme="light"]{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --card2:#eef4fb;
+  --line:#d6e2f0;
+  --text:#0f172a;
+  --muted:#526178;
+  --accent:#0284c7;
+  --accent2:#0ea5e9;
+  --violet:#7c3aed;
+  --shadow:0 8px 24px rgba(15,23,42,.12);
+}
+*{box-sizing:border-box}
+html{font-size:var(--fs);scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease,color .25s ease;
+}
+img,svg{max-width:100%}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;font-size:1rem;color:inherit}
+
+/* ---------- Barra de progreso ---------- */
+#progress{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,var(--accent),var(--violet));
+  z-index:60;transition:width .1s linear;
+  box-shadow:0 0 12px var(--accent);
+}
+
+/* ---------- Barra de navegación ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  z-index:30;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  padding:8px 10px;
+}
+.chip{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:42px;padding:0 14px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--card);
+  color:var(--text);
+  font-size:.92rem;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .2s ease,border-color .2s ease,color .2s ease,transform .1s ease;
+}
+.chip:hover{background:var(--card2);border-color:var(--accent)}
+.chip:active{transform:scale(.97)}
+.chip.on{background:rgba(56,189,248,.16);border-color:var(--accent);color:var(--accent)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#mb{order:1;font-weight:600}
+
+.chips{
+  order:3;flex:1 1 100%;
+  display:flex;gap:6px;
+  overflow-x:auto;overflow-y:hidden;
+  padding-bottom:2px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+}
+.chips::-webkit-scrollbar{display:none}
+
+.tools{
+  order:2;margin-left:auto;
+  display:flex;align-items:center;gap:6px;
+}
+.tool{
+  min-height:42px;min-width:42px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--text);
+  cursor:pointer;font-size:.95rem;
+  transition:background .2s,border-color .2s;
+}
+.tool:hover{background:var(--card2);border-color:var(--accent)}
+.tool:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#search{
+  min-height:42px;
+  border:1px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--text);
+  padding:0 10px;width:150px;
+  font-size:.9rem;
+}
+#search:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+#search::placeholder{color:var(--muted)}
+
+@media (min-width:900px){
+  .nav{flex-wrap:nowrap;padding:8px 16px}
+  .chips{order:2;flex:1 1 auto;margin-left:6px}
+  .tools{order:3;margin-left:0}
+  #search{width:190px}
+}
+
+/* ---------- Panel de índice ---------- */
+#dr{
+  position:fixed;
+  top:var(--navh);
+  left:0;bottom:0;
+  width:min(330px,88vw);
+  background:var(--card);
+  border-right:1px solid var(--line);
+  transform:translateX(-105%);
+  transition:transform .25s ease;
+  z-index:25;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:10px;
+  -webkit-overflow-scrolling:touch;
+}
+#dr.o{transform:none}
+#dr a{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border-radius:10px;
+  color:var(--text);
+  cursor:pointer;
+  min-height:44px;
+  font-size:.95rem;
+  text-decoration:none;
+  transition:background .2s,color .2s;
+  border:1px solid transparent;
+}
+#dr a:hover{background:rgba(255,255,255,.05);text-decoration:none}
+#dr a.on{background:rgba(0,212,255,.14);color:var(--accent);border-color:rgba(56,189,248,.35)}
+#dr a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+[data-theme="light"] #dr a:hover{background:rgba(2,132,199,.06)}
+
+/* ---------- Contenido principal ---------- */
+main{
+  padding:calc(var(--navh) + 18px) 14px 80px;
+  max-width:980px;
+  margin:0 auto;
+}
+.page{display:none;animation:fade .3s ease}
+.page.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h1{font-size:clamp(1.5rem,4.5vw,2.2rem);line-height:1.2;margin:.2em 0 .5em;letter-spacing:-.02em}
+h2{font-size:clamp(1.3rem,3.4vw,1.7rem);margin:1.6em 0 .6em;line-height:1.25;letter-spacing:-.01em}
+h3{font-size:clamp(1.1rem,2.6vw,1.3rem);margin:1.4em 0 .5em;color:var(--accent)}
+h4{font-size:1.02rem;margin:1.1em 0 .4em;color:var(--text)}
+p{margin:0 0 .9em}
+ul,ol{margin:.4em 0 1em;padding-left:1.3em}
+li{margin:.3em 0}
+strong{color:var(--text);font-weight:600}
+em{color:var(--accent)}
+code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  font-size:.88em;
+  background:rgba(56,189,248,.1);
+  color:var(--accent);
+  padding:.1em .4em;border-radius:6px;
+  border:1px solid rgba(56,189,248,.18);
+  word-break:break-word;
+}
+[data-theme="light"] code{background:rgba(2,132,199,.08);border-color:rgba(2,132,199,.2)}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:1.4em}
+
+/* ---------- Tarjetas ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin:14px 0;
+  box-shadow:var(--shadow);
+}
+.card h3{margin-top:0}
+.grid{
+  display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  margin:16px 0;
+}
+.grid .card{margin:0}
+
+.callout{
+  border-left:4px solid var(--accent);
+  background:rgba(56,189,248,.08);
+  border-radius:0 10px 10px 0;
+  padding:12px 16px;margin:16px 0;
+}
+.callout.warn{border-left-color:var(--warn);background:rgba(245,158,11,.08)}
+.callout.err{border-left-color:var(--err);background:rgba(239,68,68,.08)}
+.callout.ok{border-left-color:var(--ok);background:rgba(34,197,94,.08)}
+.callout strong{display:block;margin-bottom:4px}
+
+/* ---------- Código ---------- */
+.pre-wrap{position:relative;margin:14px 0}
+pre{
+  background:#060a14;
+  color:#dbeafe;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px 16px;
+  overflow-x:auto;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  font-size:.86rem;
+  line-height:1.55;
+  margin:0;
+  white-space:pre;
+  -webkit-overflow-scrolling:touch;
+}
+[data-theme="light"] pre{background:#0f172a;color:#e2e8f0}
+pre code{background:none;border:none;color:inherit;padding:0;font-size:inherit}
+.copy{
+  position:absolute;top:8px;right:8px;
+  background:rgba(56,189,248,.15);
+  color:var(--accent);
+  border:1px solid rgba(56,189,248,.4);
+  border-radius:8px;
+  padding:6px 10px;
+  font-size:.75rem;font-weight:600;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:background .2s,color .2s;
+}
+.copy:hover{background:rgba(56,189,248,.28)}
+.copy.ok{background:rgba(34,197,94,.25);color:#86efac;border-color:rgba(34,197,94,.5)}
+
+/* ---------- Tablas ---------- */
+.table-wrap{overflow-x:auto;margin:14px 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{
+  border:1px solid var(--line);
+  padding:10px 12px;
+  text-align:left;
+  vertical-align:top;
+}
+th{background:var(--card2);font-weight:600;color:var(--accent)}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+[data-theme="light"] tr:nth-child(even) td{background:rgba(2,132,199,.03)}
+
+/* ---------- Details / Acordeones ---------- */
+details{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:0;
+  margin:10px 0;
+  overflow:hidden;
+}
+details[open]{border-color:var(--accent)}
+summary{
+  cursor:pointer;
+  padding:14px 18px;
+  font-weight:600;
+  list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  min-height:44px;
+  transition:background .2s;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{
+  content:"+";font-size:1.3rem;color:var(--accent);
+  transition:transform .25s;flex:0 0 auto;
+}
+details[open] summary::after{transform:rotate(45deg)}
+summary:hover{background:rgba(56,189,248,.06)}
+details > *:not(summary){padding:0 18px 14px}
+
+/* ---------- Checklist ---------- */
+.check{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  margin:6px 0;cursor:pointer;
+  border:1px solid var(--line);background:var(--card);
+  min-height:44px;
+  transition:background .2s,border-color .2s;
+}
+.check:hover{background:var(--card2)}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+.check.done{opacity:.65}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+
+/* ---------- Hero SVG ---------- */
+.hero{
+  width:100%;max-width:440px;
+  margin:0 auto 22px;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#050810;
+  aspect-ratio:4/5;
+  box-shadow:0 12px 40px rgba(0,212,255,.15);
+}
+.hero svg{display:block;width:100%;height:100%}
+
+/* ---------- Botones generales ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;padding:0 18px;
+  border-radius:10px;
+  border:1px solid var(--accent);
+  background:rgba(56,189,248,.12);
+  color:var(--accent);
+  font-weight:600;font-size:.95rem;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+}
+.btn:hover{background:rgba(56,189,248,.22)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.solid{background:var(--accent);color:#0a0e1a;border-color:var(--accent)}
+.btn.solid:hover{background:var(--accent2)}
+
+/* ---------- Back to top ---------- */
+#top{
+  position:fixed;right:14px;bottom:14px;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--accent);color:#0a0e1a;
+  border:none;font-size:1.3rem;font-weight:700;
+  cursor:pointer;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .2s;
+  box-shadow:0 6px 20px rgba(56,189,248,.4);
+  z-index:20;
+}
+#top.on{opacity:1;pointer-events:auto}
+#top:hover{transform:translateY(-2px)}
+
+/* ---------- Toast ---------- */
+#toast{
+  position:fixed;left:50%;bottom:80px;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card);color:var(--text);
+  border:1px solid var(--accent);
+  border-radius:12px;
+  padding:12px 18px;
+  font-size:.92rem;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .25s;
+  z-index:50;max-width:90vw;text-align:center;
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- Q&A ---------- */
+.qa-level{
+  margin:28px 0 12px;
+  padding:10px 16px;
+  border-radius:10px;
+  background:linear-gradient(90deg,rgba(56,189,248,.14),transparent);
+  border-left:4px solid var(--accent);
+  font-weight:700;
+  color:var(--accent);
+  font-size:1.05rem;
+}
+.qa summary{font-weight:500;font-size:.97rem}
+.qa summary::after{content:"▾";font-size:1rem}
+.qa[open] summary::after{transform:rotate(180deg)}
+
+/* ---------- Créditos ---------- */
+.credits-name{
+  font-size:clamp(2rem,7vw,3rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  background:linear-gradient(90deg,var(--accent),var(--violet));
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+  margin:18px 0 6px;
+  line-height:1.1;
+}
+.credits-role{color:var(--muted);font-size:1.05rem;margin:0 0 24px}
+.meta{
+  display:grid;gap:8px;
+  grid-template-columns:1fr;
+  margin:18px 0;
+  font-size:.92rem;
+}
+.meta div{
+  padding:10px 14px;border-radius:10px;
+  background:var(--card);border:1px solid var(--line);
+}
+.meta b{color:var(--accent)}
+
+/* ---------- Encabezado de sección ---------- */
+.sec-head{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:8px;
+}
+.sec-head h2{margin:0}
+
+/* ---------- Print ---------- */
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  html{font-size:11pt}
+  body{background:#fff !important;color:#000 !important}
+  .nav,.tools,.chips,#dr,#top,#toast,#progress,.copy{display:none !important}
+  main{padding:0 !important;max-width:none}
+  .page{display:block !important;break-inside:auto;page-break-after:auto;animation:none}
+  .page:not(:last-child){border-bottom:1px dashed #999;margin-bottom:18px;padding-bottom:14px}
+  h1,h2,h3,h4{color:#000 !important;page-break-after:avoid;break-after:avoid}
+  h2{border-bottom:1px solid #ccc;padding-bottom:4px;margin-top:18px}
+  p,li{color:#000 !important}
+  a{color:#000 !important;text-decoration:underline}
+  code{background:#eee !important;color:#000 !important;border:1px solid #ccc !important}
+  pre{background:#f6f6f6 !important;color:#000 !important;border:1px solid #999 !important;white-space:pre-wrap !important;word-break:break-word}
+  .card,.callout,details{background:#fff !important;border:1px solid #999 !important;box-shadow:none !important;break-inside:avoid;page-break-inside:avoid}
+  .callout{border-left-width:4px !important}
+  details > *:not(summary){display:block !important}
+  details > summary{background:#eee !important}
+  table{border:1px solid #666}
+  th,td{border:1px solid #666 !important;color:#000 !important;background:#fff !important}
+  th{background:#eaeaea !important}
+  .hero{max-width:220px;box-shadow:none;border:1px solid #999}
+  .credits-name{color:#000 !important;-webkit-text-fill-color:#000;background:none !important}
+  .grid{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* ---------- Móvil estrecho ---------- */
+@media (max-width:400px){
+  main{padding-left:10px;padding-right:10px}
+  .card{padding:14px}
+  #search{width:110px}
+  .chip{padding:0 11px;font-size:.86rem}
+}
+</style>
+</head>
+<body>
+
+<div id="progress" aria-hidden="true"></div>
+
+<nav class="nav" id="nav" aria-label="Navegación principal">
+  <button class="chip" id="mb" type="button" aria-label="Abrir índice" aria-expanded="false" aria-controls="dr">☰ Índice</button>
+  <div class="chips" id="chips" role="tablist" aria-label="Secciones del tutorial"></div>
+  <div class="tools">
+    <input id="search" type="search" placeholder="Buscar…" aria-label="Buscar en el tutorial" autocomplete="off">
+    <button class="tool" id="theme" type="button" aria-label="Cambiar tema">🌙</button>
+    <button class="tool" id="font-minus" type="button" aria-label="Reducir tamaño de letra">A−</button>
+    <button class="tool" id="font-plus" type="button" aria-label="Aumentar tamaño de letra">A+</button>
+    <button class="tool" id="print" type="button" aria-label="Imprimir o guardar como PDF">🖨</button>
+  </div>
+</nav>
+
+<aside id="dr" aria-label="Índice de secciones"></aside>
+
+<main id="main">
+
+<!-- ============================================================
+     INICIO
+     ============================================================ -->
+<section class="page on" id="p-inicio" data-t="Inicio">
+  <div class="hero" id="hero-home"></div>
+
+  <h1>YuE2 · De cero a la generación musical con inteligencia artificial</h1>
+  <p class="lead">Manual definitivo para principiantes. Aprende a instalar, configurar y usar YuE2 para convertir letras y estilos musicales en canciones completas con voz e instrumentación, paso a paso y sin conocimientos previos de programación.</p>
+
+  <p style="text-align:center;margin:18px 0 26px">
+    <button class="btn" id="ix" type="button">☰ Ver índice</button>
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>¿Qué es YuE2?</h3>
+      <p>Un modelo de inteligencia artificial de código abierto que genera <strong>canciones completas</strong> —voz y acompañamiento— a partir de un archivo de letra y una descripción de estilo musical.</p>
+    </div>
+    <div class="card">
+      <h3>¿Qué necesitas?</h3>
+      <p>Un equipo con Linux o WSL2, una GPU NVIDIA con al menos <strong>16 GB de VRAM</strong> (24 GB recomendados), 32 GB de RAM y 50 GB libres. Sin GPU NVIDIA no es viable en local.</p>
+    </div>
+    <div class="card">
+      <h3>¿Qué aprenderás?</h3>
+      <p>Instalar el entorno, descargar los modelos, preparar letras y estilos, controlar los parámetros de generación, resolver errores y ejecutar proyectos prácticos progresivos.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Ruta recomendada</strong>
+    Si es tu primera vez, sigue el orden: <em>Conceptos → Procedimiento → Práctica</em>. Cuando tengas dudas, consulta <em>33 Preguntas (Q&A)</em>; si algo falla, <em>Errores</em>.
+  </div>
+
+  <div class="card">
+    <h3>Contenido del tutorial</h3>
+    <ul>
+      <li><b>Conceptos:</b> qué es YuE, diferencia con YuE2 y cómo funciona internamente.</li>
+      <li><b>Procedimiento:</b> requisitos, diagnóstico del equipo, instalación, modelos y primera canción.</li>
+      <li><b>Práctica:</b> letras, estilos, parámetros, optimización y proyectos progresivos.</li>
+      <li><b>33 Preguntas (Q&amp;A):</b> respuestas ordenadas por nivel de dificultad.</li>
+      <li><b>Errores:</b> solución de problemas y mantenimiento.</li>
+      <li><b>Resumen:</b> licencias, diccionario técnico, índice de comandos y conclusiones.</li>
+      <li><b>Fuentes y Créditos:</b> referencias documentales y autoría.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONCEPTOS
+     ============================================================ -->
+<section class="page" id="p-conceptos" data-t="Conceptos">
+  <div class="sec-head"><h2>Conceptos fundamentales</h2></div>
+  <p class="lead">Antes de instalar nada conviene entender qué es YuE2, de dónde viene y qué ocurre por dentro cuando generas una canción.</p>
+
+  <h3>¿Qué es YuE?</h3>
+  <p><strong>YuE</strong> (乐) es un proyecto de inteligencia artificial de código abierto diseñado para generar canciones completas a partir de letras y una descripción de estilo musical. Su nombre en chino significa «música» y «felicidad».</p>
+  <p>A diferencia de otros sistemas que solo producen fragmentos instrumentales, YuE genera una <strong>pista vocal y un acompañamiento instrumental coherentes</strong>, con una duración de varios minutos, intentando imitar la estructura de una canción comercial (verso, estribillo, etc.).</p>
+
+  <h3>YuE vs. YuE2: aclaración documental</h3>
+  <p>Dentro del repositorio oficial conviven dos realidades:</p>
+  <ul>
+    <li><b>YuE (o YuE-v1):</b> primera generación. Conservada en la rama <code>YuE-v1</code>. Pipeline de dos etapas con modelos como <code>YuE-s1-7B</code> y <code>YuE-s2-1B</code>.</li>
+    <li><b>YuE2:</b> evolución actual, en la rama <code>main</code>. Introduce <em>planificación simbólica</em> y un modelo base <code>YuE2-3B</code>. Es el objeto de este tutorial.</li>
+  </ul>
+  <div class="callout">
+    <strong>Conclusión verificada</strong>
+    YuE2 no es un proyecto independiente ni un repositorio separado: es la designación del modelo y del stack de inferencia actual dentro del proyecto YuE. Todos los procedimientos de este manual se refieren a la rama <code>main</code>.
+  </div>
+
+  <h3>¿Qué recibe y qué produce?</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Entrada</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td>Archivo de letra</td><td>Texto plano, opcionalmente estructurado por secciones con etiquetas como <code>[verse]</code> o <code>[chorus]</code>.</td></tr>
+      <tr><td>Archivo de estilo</td><td>Etiquetas de género y producción separadas por comas (por ejemplo: <code>pop, female vocal, upbeat</code>).</td></tr>
+      <tr><td>Prompt de audio (opcional)</td><td>Audio de referencia para guiar el estilo o la instrumentación.</td></tr>
+      <tr><td>Salida</td><td>Un archivo de audio (<code>.mp3</code> o <code>.wav</code>) con la canción generada.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Cómo funciona internamente: el pipeline de dos etapas</h3>
+  <p>YuE2 separa el proceso creativo en dos fases bien diferenciadas:</p>
+  <ol>
+    <li><b>Planificación simbólica (Stage 1).</b> El modelo <code>YuE2-3B</code> recibe la letra y el estilo. En lugar de generar audio directamente, produce una representación intermedia: una estructura musical (a menudo en un formato similar al ABC) y una secuencia de tokens semánticos. Es como si el modelo «escribiera la partitura».</li>
+    <li><b>Renderización acústica (Stage 2).</b> Los tokens semánticos se convierten en <em>latentes acústicos</em> (representaciones numéricas del sonido). El decodificador VAE (<code>YuE2-Vae</code>) transforma esos latentes en una onda de audio real de 48 kHz.</li>
+  </ol>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Tokens</h4>
+      <p>Unidades básicas de información que maneja el modelo. Así como un modelo de lenguaje divide el texto en palabras o subpalabras, YuE divide la música en «tokens de audio».</p>
+    </div>
+    <div class="card">
+      <h4>Checkpoint</h4>
+      <p>Archivo que contiene los pesos o parámetros entrenados del modelo. <code>YuE2-3B</code> es un checkpoint.</p>
+    </div>
+    <div class="card">
+      <h4>Inferencia</h4>
+      <p>Proceso de usar un modelo ya entrenado para generar una salida. No es entrenamiento.</p>
+    </div>
+    <div class="card">
+      <h4>VRAM</h4>
+      <p>Memoria dedicada de la GPU. YuE necesita mucha porque procesa secuencias de audio largas.</p>
+    </div>
+    <div class="card">
+      <h4>Latentes acústicos</h4>
+      <p>Representación numérica comprimida del audio, generada por el modelo principal. El VAE los decodifica en audio real.</p>
+    </div>
+    <div class="card">
+      <h4>VAE</h4>
+      <p>Autoencoder variacional. En YuE2, <code>YuE2-Vae</code> actúa como decodificador de los latentes acústicos en audio estéreo.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <strong>Idiomas y géneros</strong>
+    YuE2 soporta múltiples idiomas (incluido el español, inglés, chino, japonés, coreano y ruso) y decenas de géneros musicales.
+  </div>
+</section>
+
+<!-- ============================================================
+     PROCEDIMIENTO
+     ============================================================ -->
+<section class="page" id="p-procedimiento" data-t="Procedimiento">
+  <div class="sec-head"><h2>Procedimiento paso a paso</h2></div>
+  <p class="lead">Desde la auditoría del hardware hasta tu primera canción. Sigue el orden y no saltes fases.</p>
+
+  <h3>1. Requisitos técnicos</h3>
+  <h4>Sistema operativo</h4>
+  <ul>
+    <li><b>Soportado oficialmente:</b> Linux (Ubuntu 22.04 / 24.04 y distribuciones similares).</li>
+    <li><b>Alternativa verificada para Windows:</b> WSL2 (Windows Subsystem for Linux) con Ubuntu 24.04.</li>
+    <li><b>No recomendado:</b> Windows nativo sin WSL.</li>
+  </ul>
+
+  <h4>Hardware</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Componente</th><th>Mínimo técnico</th><th>Recomendado oficial</th></tr></thead>
+    <tbody>
+      <tr><td>GPU</td><td>NVIDIA con soporte BF16 y 16 GB VRAM</td><td>NVIDIA con 24 GB VRAM o más</td></tr>
+      <tr><td>RAM</td><td>32 GB</td><td>64 GB o más</td></tr>
+      <tr><td>Almacenamiento</td><td>50 GB libres</td><td>100 GB libres (SSD)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout warn">
+    <strong>Sobre la VRAM</strong>
+    La documentación oficial indica 24 GB con BF16, pero pruebas independientes confirman que <code>YuE2-3B</code> puede ejecutarse en GPUs de 16 GB con los perfiles de memoria adecuados, a cambio de tiempos de generación más largos. Por debajo de 16 GB existen perfiles de cuantización y offloading, experimentales y más lentos.
+  </div>
+
+  <h4>Software</h4>
+  <ul>
+    <li>Python 3.10+ (recomendado 3.12).</li>
+    <li>PyTorch 2.10.0 con compilación CUDA.</li>
+    <li>CUDA 12.8.</li>
+    <li>Controlador NVIDIA actualizado.</li>
+    <li>Git y Git LFS.</li>
+  </ul>
+
+  <h3>2. Diagnóstico previo del equipo</h3>
+  <p>Ejecuta estos comandos sin modificar tu sistema. Te dirán si puedes continuar.</p>
+
+  <h4>Versión de Linux</h4>
+  <div class="pre-wrap"><pre>lsb_release -a</pre></div>
+  <p><b>Resultado esperado:</b> algo similar a <code>Description: Ubuntu 24.04.x LTS</code>. Si falla, usa <code>cat /etc/os-release</code>.</p>
+
+  <h4>GPU y VRAM</h4>
+  <div class="pre-wrap"><pre>nvidia-smi</pre></div>
+  <p>Muestra el nombre de la GPU y la VRAM total en la columna <code>Memory-Usage</code>. Si el comando no existe o da error, no tienes controladores NVIDIA o no tienes GPU NVIDIA.</p>
+  <ul>
+    <li>≥ 16000 MiB: umbral mínimo.</li>
+    <li>≥ 24000 MiB: rango recomendado.</li>
+  </ul>
+
+  <h4>Memoria RAM</h4>
+  <div class="pre-wrap"><pre>free -h</pre></div>
+
+  <h4>Espacio en disco</h4>
+  <div class="pre-wrap"><pre>df -h</pre></div>
+
+  <h4>Python y Git</h4>
+  <div class="pre-wrap"><pre>python3 --version
+git --version</pre></div>
+
+  <h4>Tabla de decisión rápida</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Si tu diagnóstico muestra…</th><th>Entonces…</th></tr></thead>
+    <tbody>
+      <tr><td>Linux/WSL2 + GPU NVIDIA ≥ 16 GB VRAM + 32 GB RAM + 50 GB libres</td><td>Puedes seguir el tutorial completo tal como está escrito.</td></tr>
+      <tr><td>Windows nativo (sin WSL) + GPU NVIDIA ≥ 16 GB VRAM</td><td>Instala WSL2 (Ubuntu 24.04) y luego sigue el tutorial.</td></tr>
+      <tr><td>GPU con &lt; 16 GB VRAM (pero ≥ 8 GB)</td><td>Puedes intentarlo con perfiles de cuantización (ver Práctica), pero será lento y experimental.</td></tr>
+      <tr><td>Sin GPU NVIDIA</td><td>No podrás ejecutar YuE2 en local. Usa la demo online o alquila una GPU en la nube.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>3. Instalación paso a paso</h3>
+  <p>Abre una terminal de Linux (Ubuntu 22.04 / 24.04) o WSL2 (Ubuntu 24.04).</p>
+
+  <h4>Fase 1 · Preparación del sistema</h4>
+  <p><b>Objetivo:</b> asegurar que las herramientas básicas de compilación y Git LFS están presentes.</p>
+  <div class="pre-wrap"><pre>sudo apt update && sudo apt install -y git git-lfs python3-pip python3-venv build-essential</pre></div>
+  <p><b>Comprobación:</b> ejecuta <code>git lfs version</code>. Debe mostrar una versión.</p>
+
+  <h4>Fase 2 · Entorno virtual de Python</h4>
+  <p><b>Objetivo:</b> aislar las dependencias de YuE2 del resto del sistema.</p>
+  <div class="pre-wrap"><pre>python3.12 -m venv ~/yue2-env
+source ~/yue2-env/bin/activate</pre></div>
+  <p>Si tu Python es 3.11, usa <code>python3.11 -m venv ~/yue2-env</code>.</p>
+  <p><b>Resultado esperado:</b> el prompt cambia y muestra <code>(yue2-env)</code> al principio. Comprueba con <code>which python</code>: debe apuntar a <code>~/yue2-env/bin/python</code>.</p>
+  <div class="callout">
+    <strong>A partir de aquí</strong>
+    Todos los comandos del tutorial deben ejecutarse con el entorno virtual activado.
+  </div>
+
+  <h4>Fase 3 · Instalar YuE2 y sus dependencias</h4>
+  <p><b>Objetivo:</b> instalar el paquete oficial con sus dependencias fijadas (PyTorch 2.10.0, Transformers 4.57.6, etc.).</p>
+  <div class="pre-wrap"><pre>pip install git+https://github.com/multimodal-art-projection/YuE.git</pre></div>
+  <p>Este proceso descarga PyTorch con CUDA (varios GB). Puede tardar varios minutos.</p>
+  <p><b>Comprobación:</b></p>
+  <div class="pre-wrap"><pre>python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"</pre></div>
+  <p>Debe imprimir una versión <code>2.10.0+cu128</code> (o similar) y luego <code>True</code>.</p>
+
+  <h4>Fase 4 · Verificar la instalación</h4>
+  <div class="pre-wrap"><pre>python -c "import torch, transformers, torchaudio; print('PyTorch OK, Transformers OK, Torchaudio OK')"</pre></div>
+
+  <h3>4. Descarga y preparación de los modelos</h3>
+  <p>YuE2 no incluye los pesos en el repositorio de código. Debes descargarlos desde Hugging Face.</p>
+
+  <h4>Modelos necesarios</h4>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Modelo</th><th>Identificador</th><th>Función</th></tr></thead>
+    <tbody>
+      <tr><td>YuE2-3B</td><td><code>m-a-p/YuE2-3B</code></td><td>Modelo principal. Convierte texto en tokens semánticos y latentes acústicos.</td></tr>
+      <tr><td>YuE2-Vae</td><td><code>m-a-p/YuE2-Vae</code></td><td>Decodificador. Convierte latentes acústicos en audio estéreo.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>Opcional</b> (solo para covers o edición avanzada): <code>SheetSage2</code> y <code>MERT-v2-FullSong</code>.</p>
+
+  <h4>Descarga con huggingface-cli</h4>
+  <div class="pre-wrap"><pre>pip install huggingface_hub
+huggingface-cli download m-a-p/YuE2-3B --local-dir ~/yue2-models/YuE2-3B
+huggingface-cli download m-a-p/YuE2-Vae --local-dir ~/yue2-models/YuE2-Vae</pre></div>
+  <p><b>Comprobación:</b> <code>ls -lh ~/yue2-models/YuE2-3B</code> debe mostrar archivos de varios GB.</p>
+
+  <div class="callout warn">
+    <strong>Licencias de los pesos</strong>
+    El código de YuE2 es Apache 2.0, pero los pesos tienen sus propias condiciones. La documentación indica uso no comercial salvo autorización expresa. Revisa el <code>README.md</code> de cada modelo en Hugging Face antes de usarlos comercialmente.
+  </div>
+
+  <h3>5. Mi primera canción</h3>
+  <p>Requisito previo: entorno activado y modelos descargados.</p>
+
+  <h4>Preparar los archivos de entrada</h4>
+  <div class="pre-wrap"><pre>mkdir -p ~/yue2-pruebas
+cd ~/yue2-pruebas
+nano letra.txt</pre></div>
+  <p>Contenido para <code>letra.txt</code>:</p>
+  <div class="pre-wrap"><pre>[verse]
+Caminando por la ciudad
+las luces brillan sin parar
+[chorus]
+Y el ritmo me hace despertar
+esta noche vamos a brillar</pre></div>
+  <p>Guarda con <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, y sal con <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
+
+  <div class="pre-wrap"><pre>nano estilo.txt</pre></div>
+  <p>Contenido para <code>estilo.txt</code>:</p>
+  <div class="pre-wrap"><pre>pop, synthwave, female vocal, upbeat, 120 bpm</pre></div>
+
+  <h4>Ejecutar la generación</h4>
+  <div class="pre-wrap"><pre>python -m yue2.infer \
+  --model_path ~/yue2-models/YuE2-3B \
+  --vae_path ~/yue2-models/YuE2-Vae \
+  --lyrics letra.txt \
+  --style estilo.txt \
+  --output mi_primera_cancion.mp3</pre></div>
+
+  <div class="callout">
+    <strong>Nota sobre el comando</strong>
+    El nombre exacto del módulo y los argumentos pueden variar según la versión del paquete. Si <code>python -m yue2.infer</code> falla, prueba con <code>yue2-infer</code> o consulta el <code>--help</code> del paquete instalado. Si no encuentras el ejecutable, revisa el <code>README.md</code> con <code>pip show yue2</code>.
+  </div>
+
+  <p><b>Comprobación:</b> al finalizar debe aparecer el archivo. Una canción de 1 minuto suele ocupar entre 1 y 3 MB. En WSL2 puedes copiarlo a Windows con:</p>
+  <div class="pre-wrap"><pre>cp mi_primera_cancion.mp3 /mnt/c/Users/TuUsuario/Desktop/</pre></div>
+</section>
+
+<!-- ============================================================
+     PRÁCTICA
+     ============================================================ -->
+<section class="page" id="p-practica" data-t="Práctica">
+  <div class="sec-head"><h2>Práctica y control del resultado</h2></div>
+  <p class="lead">La calidad de la salida depende en gran medida de la calidad de la entrada y del ajuste de los parámetros.</p>
+
+  <h3>Preparar las entradas: letras y estilos</h3>
+  <p>YuE2 acepta tres tipos de información:</p>
+
+  <h4>Letras (<code>--lyrics_txt</code>)</h4>
+  <ul>
+    <li><b>Formato:</b> texto plano (<code>.txt</code>).</li>
+    <li><b>Estructura:</b> usa etiquetas entre corchetes para indicar secciones. Las más documentadas: <code>[verse]</code>, <code>[chorus]</code>, <code>[bridge]</code>, <code>[intro]</code>, <code>[outro]</code>.</li>
+    <li><b>Contenido:</b> en el idioma deseado. No incluyas instrucciones musicales dentro de la letra; para eso está el archivo de estilo.</li>
+    <li><b>Error común:</b> líneas en blanco excesivas o caracteres extraños. Mantén el texto limpio.</li>
+  </ul>
+
+  <h4>Estilo / Género (<code>--style</code> o <code>--genre_txt</code>)</h4>
+  <p>Lista de etiquetas separadas por comas. Sé específico pero no escribas una novela. Ejemplos válidos:</p>
+  <div class="pre-wrap"><pre>pop, female vocal, uplifting, 120 bpm
+rock, electric guitar, male vocal, energetic
+jazz, piano, saxophone, smooth, slow
+electronic, synth, dance, 128 bpm</pre></div>
+
+  <h4>Prompt de audio (opcional)</h4>
+  <p>Puedes dar un audio de referencia para que el modelo imite su estilo o instrumentación. Se activa con <code>--use_audio_prompt</code> y <code>--audio_prompt_path ruta_a_tu_audio.mp3</code>.</p>
+
+  <h3>Dominar los estilos musicales</h3>
+  <p><b>Ejercicio:</b> comparar dos estilos con la misma letra.</p>
+  <ol>
+    <li>Usa la misma <code>letra.txt</code> del ejemplo anterior.</li>
+    <li>Crea <code>estilo_pop.txt</code> con: <code>pop, acoustic guitar, female vocal, warm, 100 bpm</code>.</li>
+    <li>Crea <code>estilo_electronico.txt</code> con: <code>electronic, synthwave, male vocal, energetic, 128 bpm</code>.</li>
+    <li>Ejecuta la generación dos veces, cambiando solo el archivo de estilo y el nombre de salida.</li>
+    <li>Escucha ambas versiones y observa cómo cambia no solo la instrumentación, sino también la energía vocal.</li>
+  </ol>
+  <p>La documentación oficial menciona soporte para más de 60 géneros, incluyendo City Pop, Heavy Metal, Jazz, Flamenco, Pop, Rock, Electrónica y Música Ambiental.</p>
+
+  <h3>Letras, voces y estructura</h3>
+  <p>YuE2 intenta generar una voz que cante la letra proporcionada. No es un sintetizador perfecto: la pronunciación puede ser ocasionalmente imperfecta, especialmente en idiomas menos representados.</p>
+  <p><b>Para mejorar la claridad vocal:</b></p>
+  <ul>
+    <li>Escribe la letra de forma natural, como para un cantante humano.</li>
+    <li>Evita palabras inventadas o secuencias de consonantes impronunciables.</li>
+    <li>Usa etiquetas de sección para dar estructura y cambios de energía.</li>
+  </ul>
+
+  <h4>Estructura típica que puedes probar</h4>
+  <div class="pre-wrap"><pre>[intro]
+(2 líneas instrumentales o vocales suaves)
+[verse]
+(4 líneas)
+[chorus]
+(4 líneas)
+[verse]
+(4 líneas)
+[chorus]
+(4 líneas)
+[outro]
+(2 líneas)</pre></div>
+  <p>YuE2 no garantiza que cada sección dure exactamente lo imaginado, pero la estructura general se respeta.</p>
+
+  <h3>Parámetros de generación</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Parámetro</th><th>Función</th><th>Valores típicos</th><th>Efecto</th></tr></thead>
+    <tbody>
+      <tr><td><code>--run_n_segments</code></td><td>Número de segmentos de letra a procesar.</td><td>2 (defecto), 4, 6…</td><td>Aumentarlo genera canciones más largas. Cada segmento suele corresponder a una sección.</td></tr>
+      <tr><td><code>--max_new_tokens</code></td><td>Máximo de tokens por segmento.</td><td>3000 (defecto)</td><td>Controla la duración máxima de cada fragmento.</td></tr>
+      <tr><td><code>--stage2_batch_size</code></td><td>Tamaño de lote en la etapa 2.</td><td>4 (defecto), 8, 16…</td><td>Acelera la generación si hay VRAM suficiente. Si hay OOM, redúcelo.</td></tr>
+      <tr><td><code>--profile</code></td><td>Perfil de optimización de memoria.</td><td>1 (16 GB+), 3 (12 GB), 5 (&lt;8 GB)</td><td>Ajusta uso de memoria y cuantización. Número menor = más rápido y más VRAM.</td></tr>
+      <tr><td><code>--seed</code></td><td>Semilla aleatoria.</td><td>Cualquier entero.</td><td>Fija la aleatoriedad. Misma semilla y parámetros = mismo resultado.</td></tr>
+      <tr><td><code>--cfg_scale</code></td><td>Escala de guía libre de clasificador.</td><td>3.0 – 7.0</td><td>Controla cuánto se obedece al prompt de estilo. Valores altos = más fidelidad, menos naturalidad.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>Ejemplo: canción más larga</h4>
+  <div class="pre-wrap"><pre>python -m yue2.infer \
+  --model_path ~/yue2-models/YuE2-3B \
+  --vae_path ~/yue2-models/YuE2-Vae \
+  --lyrics letra_larga.txt \
+  --style estilo.txt \
+  --run_n_segments 6 \
+  --output cancion_larga.mp3</pre></div>
+  <p>Si no especificas un parámetro, el script usa su valor por defecto. No hay una configuración que «guardar» y «restaurar»: simplemente omite el argumento.</p>
+
+  <h3>Generación por fragmentos y continuidad</h3>
+  <p>YuE2 genera la canción por segmentos. Es necesario porque procesar una canción completa de una sola vez requeriría una cantidad de VRAM imposible para la mayoría de GPUs.</p>
+  <ul>
+    <li><code>--run_n_segments</code> indica cuántos segmentos procesar.</li>
+    <li>El modelo genera el primer segmento, luego el segundo, manteniendo coherencia mediante el contexto.</li>
+    <li><b>Ventaja:</b> permite canciones de duración considerable sin agotar memoria.</li>
+    <li><b>Limitación:</b> si un segmento falla (OOM puntual), la generación se detiene.</li>
+  </ul>
+  <p>En canciones muy largas pueden aparecer ligeras variaciones en la instrumentación o en el timbre de la voz. Es una limitación inherente al proceso de generación secuencial.</p>
+
+  <h3>Optimización y uso de recursos</h3>
+  <p>Si tu GPU tiene menos de 24 GB de VRAM o experimentas errores <em>Out of Memory</em>:</p>
+  <ol>
+    <li><b>Usa un perfil de memoria adecuado.</b> Para 16 GB: <code>--profile 2</code> o <code>3</code>. Para 12 GB: <code>--profile 4</code>. Para 8 GB: <code>--profile 5</code> (cuantización de 8 bits y posible offloading a CPU).</li>
+    <li><b>Reduce <code>--stage2_batch_size</code>.</b> Prueba con <code>2</code> o <code>1</code>.</li>
+    <li><b>Reduce <code>--run_n_segments</code>.</b> Canciones más cortas liberan memoria.</li>
+    <li><b>Cierra otras aplicaciones que usen la GPU</b>: navegadores con aceleración por hardware, juegos, herramientas de diseño.</li>
+    <li><b>Monitorea el uso.</b> En otra terminal: <code>watch -n 1 nvidia-smi</code>.</li>
+  </ol>
+  <div class="callout err">
+    <strong>Qué no hacer</strong>
+    No aumentes <code>--stage2_batch_size</code> ni <code>--run_n_segments</code> a ciegas esperando que «vaya más rápido». No intentes ejecutar YuE2 en GPUs sin soporte BF16 (por ejemplo, GTX 1080 Ti).
+  </div>
+
+  <h3>Proyectos prácticos progresivos</h3>
+
+  <h4>Proyecto 1 · Primera generación (Principiante)</h4>
+  <ul>
+    <li><b>Objetivo:</b> generar una canción de 2 segmentos con una letra sencilla.</li>
+    <li><b>Qué necesitas:</b> haber completado instalación, descarga de modelos y primera canción.</li>
+    <li><b>Resultado esperado:</b> un archivo <code>.mp3</code> reproducible.</li>
+    <li><b>Aprendizaje:</b> familiarizarte con el flujo de trabajo básico.</li>
+  </ul>
+
+  <h4>Proyecto 2 · Comparar dos estilos (Principiante)</h4>
+  <ul>
+    <li><b>Objetivo:</b> observar cómo el estilo afecta a la misma letra.</li>
+    <li><b>Instrucciones:</b> usa la misma letra del Proyecto 1. Genera una versión con <code>estilo_pop.txt</code> y otra con <code>estilo_electronico.txt</code>. Compara energía, instrumentación y tempo.</li>
+    <li><b>Aprendizaje:</b> comprender la influencia del prompt de estilo.</li>
+  </ul>
+
+  <h4>Proyecto 3 · Canción con letra original (Intermedio)</h4>
+  <ul>
+    <li><b>Objetivo:</b> escribir una letra original de 4 segmentos (verso, estribillo, verso, estribillo) y generarla.</li>
+    <li><b>Instrucciones:</b> crea <code>letra_original.txt</code> con la estructura <code>[verse]</code>, <code>[chorus]</code>. Usa <code>--run_n_segments 4</code>.</li>
+    <li><b>Aprendizaje:</b> practicar la preparación de entradas y la generación de canciones más largas.</li>
+  </ul>
+
+  <h4>Proyecto 4 · Diagnosticar un error controlado (Intermedio)</h4>
+  <ul>
+    <li><b>Objetivo:</b> provocar un OOM y aprender a solucionarlo.</li>
+    <li><b>Instrucciones:</b> ejecuta una generación con <code>--run_n_segments 8</code> y <code>--stage2_batch_size 8</code> en una GPU de 16 GB. Deberías obtener un error de memoria. Luego reduce los valores y comprueba que la generación funciona.</li>
+    <li><b>Aprendizaje:</b> entender la relación entre parámetros y consumo de VRAM.</li>
+  </ul>
+
+  <h4>Proyecto 5 · Flujo reproducible (Avanzado)</h4>
+  <ul>
+    <li><b>Objetivo:</b> generar la misma canción dos veces usando la misma semilla.</li>
+    <li><b>Instrucciones:</b> ejecuta una generación con <code>--seed 42</code>. Guarda el archivo. Ejecuta de nuevo con <code>--seed 42</code> y los mismos parámetros. Compara ambos archivos.</li>
+    <li><b>Aprendizaje:</b> comprender el concepto de semilla y reproducibilidad en modelos generativos.</li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     33 PREGUNTAS (Q&A)
+     ============================================================ -->
+<section class="page" id="p-qa" data-t="33 Preguntas (Q&amp;A)">
+  <div class="sec-head"><h2>33 preguntas y respuestas para dominar YuE</h2></div>
+  <p class="lead">Organizadas por nivel de dificultad. Pulsa una pregunta para desplegar la respuesta.</p>
+
+  <div class="qa-level">Nivel 1 · Principiante absoluto (1 a 7)</div>
+
+  <details class="qa"><summary>1. ¿Qué es YuE y qué significa su nombre?</summary>
+    <p>YuE es un proyecto de código abierto para generar canciones completas (voz y acompañamiento) a partir de letras y estilos musicales. Su nombre proviene del chino (乐) y significa «música» y «felicidad». Se pronuncia «ye».</p>
+  </details>
+
+  <details class="qa"><summary>2. ¿Cuál es la diferencia entre YuE y YuE2?</summary>
+    <p>YuE (o YuE-v1) es la primera generación del proyecto. YuE2 es la versión actual, disponible en la rama principal del mismo repositorio. YuE2 introduce mejoras como la planificación simbólica y un modelo base más potente (YuE2-3B). No son proyectos separados, sino versiones evolutivas del mismo proyecto.</p>
+  </details>
+
+  <details class="qa"><summary>3. ¿Necesito saber programar para usar YuE2?</summary>
+    <p>No. Aunque necesitarás usar una terminal para ejecutar comandos, el tutorial te guía paso a paso. No necesitas escribir código, solo copiar y pegar los comandos que se proporcionan y entender qué hace cada uno.</p>
+  </details>
+
+  <details class="qa"><summary>4. ¿Qué hardware mínimo necesito para ejecutar YuE2 en local?</summary>
+    <p>Necesitas un ordenador con Linux (o WSL2 en Windows), una GPU NVIDIA con soporte para BF16 y al menos 16 GB de VRAM (aunque la documentación oficial recomienda 24 GB), 32 GB de RAM y unos 50 GB de espacio libre en disco. Sin una GPU NVIDIA, no podrás ejecutarlo en local.</p>
+  </details>
+
+  <details class="qa"><summary>5. ¿Puedo usar YuE2 en Windows directamente?</summary>
+    <p>La ruta oficial y estable es Linux. Para usuarios de Windows, la forma recomendada es instalar WSL2 con Ubuntu 24.04 y seguir el tutorial dentro de ese entorno. Ejecutarlo en Windows nativo no está oficialmente soportado.</p>
+  </details>
+
+  <details class="qa"><summary>6. ¿Qué es un «modelo» en el contexto de YuE2?</summary>
+    <p>Un modelo es el archivo que contiene los «conocimientos» que la IA ha aprendido durante su entrenamiento. En YuE2, el modelo principal es YuE2-3B, que se encarga de convertir el texto en una representación musical. Es diferente del código del programa.</p>
+  </details>
+
+  <details class="qa"><summary>7. ¿Qué tipo de archivos necesita YuE2 para generar una canción?</summary>
+    <p>Principalmente dos archivos de texto: uno con la letra de la canción (.txt) y otro con las etiquetas de estilo (también .txt, por ejemplo: pop, female vocal, upbeat). Opcionalmente, puede usar un archivo de audio como referencia de estilo.</p>
+  </details>
+
+  <div class="qa-level">Nivel 2 · Principiante (8 a 14)</div>
+
+  <details class="qa"><summary>8. ¿Qué es un entorno virtual de Python y por qué debo usarlo?</summary>
+    <p>Un entorno virtual es una carpeta aislada donde se instalan las dependencias de un proyecto específico. Sirve para evitar conflictos con otras versiones de Python o de librerías que tengas instaladas en el sistema. Al activarlo, los comandos pip install afectan solo a ese entorno, manteniendo tu sistema limpio.</p>
+  </details>
+
+  <details class="qa"><summary>9. He ejecutado pip install pero el comando yue2-infer no aparece. ¿Qué hago?</summary>
+    <p>Primero, asegúrate de que el entorno virtual está activado (debe aparecer (yue2-env) en el prompt). Si lo está, comprueba que la instalación terminó sin errores. A veces, el paquete expone el comando como un módulo. Prueba con python -m yue2.infer en lugar de yue2-infer.</p>
+  </details>
+
+  <details class="qa"><summary>10. ¿Cómo sé si mi GPU es compatible con YuE2?</summary>
+    <p>Ejecuta nvidia-smi en la terminal. Si el comando funciona, verás el nombre de tu GPU y la VRAM total. Busca que sea una GPU NVIDIA con al menos 16 GB de VRAM y que soporte BF16 (las arquitecturas Ampere, Ada Lovelace y Hopper lo soportan; las GTX 10xx y 16xx no).</p>
+  </details>
+
+  <details class="qa"><summary>11. ¿Qué es git-lfs y por qué se instala?</summary>
+    <p>Git LFS (Large File Storage) es una extensión de Git para manejar archivos grandes. Los modelos de IA ocupan varios gigabytes, y Git LFS permite descargarlos de forma eficiente sin sobrecargar el repositorio de código. Se instala con sudo apt install git-lfs y se inicializa con git lfs install.</p>
+  </details>
+
+  <details class="qa"><summary>12. ¿Dónde se descargan los modelos?</summary>
+    <p>Los modelos se descargan desde Hugging Face. Los identificadores oficiales son m-a-p/YuE2-3B y m-a-p/YuE2-Vae. El tutorial utiliza huggingface-cli download para guardarlos en una carpeta local (~/yue2-models/).</p>
+  </details>
+
+  <details class="qa"><summary>13. ¿Qué significa que un comando devuelva True al comprobar torch.cuda.is_available()?</summary>
+    <p>Significa que PyTorch ha detectado correctamente tu GPU NVIDIA y que podrá utilizarla para acelerar los cálculos. Si devuelve False, PyTorch no está viendo la GPU, y YuE2 no podrá ejecutarse (o lo hará de forma extremadamente lenta en CPU, lo cual no es práctico).</p>
+  </details>
+
+  <details class="qa"><summary>14. ¿Puedo generar una canción sin haber descargado el modelo VAE?</summary>
+    <p>No. El modelo VAE (YuE2-Vae) es el decodificador que convierte los datos internos generados por el modelo principal en una onda de audio reproducible. Sin él, el proceso se detendría antes de producir un archivo .mp3.</p>
+  </details>
+
+  <div class="qa-level">Nivel 3 · Intermedio (15 a 21)</div>
+
+  <details class="qa"><summary>15. ¿Cómo puedo hacer que una canción sea más larga?</summary>
+    <p>El parámetro --run_n_segments controla cuántos segmentos de letra se procesan. Aumenta su valor (por ejemplo, de 2 a 4 o 6) para generar una canción más larga. Cada segmento suele corresponder a una sección de la letra (verso, estribillo).</p>
+  </details>
+
+  <details class="qa"><summary>16. La voz generada no pronuncia bien mi letra. ¿Qué puedo hacer?</summary>
+    <p>YuE2 no es un sintetizador de voz perfecto. Para mejorar la claridad: escribe la letra de forma natural, evita palabras inventadas, usa etiquetas de sección ([verse], [chorus]) para dar estructura, y prueba con un estilo que se adapte al idioma (por ejemplo, estilos pop suelen funcionar bien en español). A veces, generar varias veces con semillas distintas mejora el resultado.</p>
+  </details>
+
+  <details class="qa"><summary>17. ¿Qué diferencia hay entre --stage2_batch_size y --run_n_segments?</summary>
+    <p>--run_n_segments controla la longitud de la canción (cuántos segmentos se generan). --stage2_batch_size controla cuántos segmentos se procesan simultáneamente en la etapa de renderización. Un batch size más alto acelera la generación si tienes VRAM suficiente, pero no cambia la longitud total.</p>
+  </details>
+
+  <details class="qa"><summary>18. ¿Cómo puedo saber qué GPU está usando YuE2 si tengo varias instaladas?</summary>
+    <p>Puedes especificar el índice de la GPU con el parámetro --cuda_idx. Por defecto es 0 (la primera GPU). Si tienes una segunda GPU, usa --cuda_idx 1. Puedes ver los índices con nvidia-smi (la primera columna, GPU).</p>
+  </details>
+
+  <details class="qa"><summary>19. ¿Qué es el «prompt de audio» y cuándo debería usarlo?</summary>
+    <p>Es un archivo de audio (.mp3 o .wav) que le das al modelo como referencia de estilo. Se activa con --use_audio_prompt y --audio_prompt_path. Úsalo cuando quieras que la canción generada se parezca al estilo, la instrumentación o el ritmo de una canción existente. No es obligatorio.</p>
+  </details>
+
+  <details class="qa"><summary>20. ¿Puedo usar la misma semilla (--seed) para obtener exactamente la misma canción dos veces?</summary>
+    <p>Sí. Si ejecutas la generación dos veces con los mismos parámetros, la misma letra, el mismo estilo y la misma semilla (--seed 123, por ejemplo), obtendrás archivos de audio idénticos o extremadamente similares. Esto es útil para reproducir resultados.</p>
+  </details>
+
+  <details class="qa"><summary>21. ¿Qué son las etiquetas [verse] y [chorus] en el archivo de letra?</summary>
+    <p>Son marcadores de estructura que le indican al modelo qué tipo de sección es cada parte de la letra. [verse] es un verso (estrofa), [chorus] es el estribillo. YuE2 las interpreta para organizar la canción y asignar la energía adecuada a cada parte. No son obligatorias, pero ayudan mucho.</p>
+  </details>
+
+  <div class="qa-level">Nivel 4 · Intermedio-avanzado (22 a 28)</div>
+
+  <details class="qa"><summary>22. Mi GPU tiene 16 GB de VRAM y recibo un error de «Out of Memory». ¿Qué perfil debo usar?</summary>
+    <p>Prueba con --profile 2 o --profile 3. Estos perfiles activan optimizaciones (como cuantización de 8 bits) para reducir el consumo de memoria. Si el error persiste, reduce también --stage2_batch_size a 2 o 1, y --run_n_segments a 2. La documentación de perfiles indica que el perfil 3 está pensado para 12 GB y el 4 para menos de 10 GB.</p>
+  </details>
+
+  <details class="qa"><summary>23. ¿Qué significa que YuE2 use «planificación simbólica»?</summary>
+    <p>Significa que antes de generar el audio final, el modelo crea un «plan» o «partitura» intermedia (a menudo en un formato similar al ABC) que define la estructura armónica y melódica de la canción. Luego, un segundo paso renderiza ese plan en audio. Esto permite un mayor control y coherencia que si se generara el audio directamente de golpe.</p>
+  </details>
+
+  <details class="qa"><summary>24. ¿Puedo ejecutar YuE2 en una GPU sin soporte BF16, como una GTX 1080 Ti?</summary>
+    <p>No de forma fiable. YuE2 está diseñado y optimizado para BF16 (bfloat16). Las GTX 1080 Ti y otras tarjetas antiguas no soportan BF16 de forma nativa, por lo que el modelo no funcionará correctamente o dará errores. Necesitas una GPU de arquitectura Ampere o superior (RTX 30xx, 40xx, etc.).</p>
+  </details>
+
+  <details class="qa"><summary>25. ¿Cómo puedo ver el progreso de la generación si el script no muestra una barra de progreso?</summary>
+    <p>Abre otra terminal y ejecuta watch -n 1 nvidia-smi. Observa la columna GPU-Util. Si está en un valor alto (por ejemplo, 80-100%), el modelo está trabajando. Si está a 0% y la memoria está llena, puede estar bloqueado. También puedes revisar los archivos temporales que el script va creando en la carpeta de salida.</p>
+  </details>
+
+  <details class="qa"><summary>26. ¿Qué diferencia hay entre el modo CoT (Chain-of-Thought) y el modo ICL (In-Context Learning) en YuE2?</summary>
+    <p>En la versión original (YuE-v1), CoT usaba solo letra y género, mientras que ICL además requería un prompt de audio. En YuE2, la planificación simbólica es el modo principal. El modo ICL (si está disponible en tu versión del runtime) se activa con --icl y requiere un prompt de audio. Para empezar, no necesitas preocuparte por ICL; usa el modo por defecto (solo letra + estilo).</p>
+  </details>
+
+  <details class="qa"><summary>27. ¿Cómo puedo saber si el archivo .mp3 generado es válido y no está corrupto?</summary>
+    <p>Primero, comprueba el tamaño del archivo con ls -lh. Un archivo de 0 bytes o de unos pocos kilobytes es sospechoso. Luego, reprodúcelo con un reproductor como VLC o ffplay. Si suena, es válido. También puedes usar ffprobe archivo.mp3 (si tienes ffmpeg instalado) para ver los metadatos (duración, códec, etc.).</p>
+  </details>
+
+  <details class="qa"><summary>28. ¿Qué debo hacer si el proceso de generación se interrumpe a la mitad (por ejemplo, por un corte de luz)?</summary>
+    <p>YuE2 no tiene un sistema de «reanudación» automática robusto en la interfaz de línea de comandos básica. Si se interrumpe, deberás volver a ejecutar el comando desde el principio. Para evitar perder todo el progreso, puedes generar canciones en segmentos más pequeños (por ejemplo, --run_n_segments 2) y luego unirlos con una herramienta externa (como ffmpeg), aunque esto puede afectar a la continuidad.</p>
+  </details>
+
+  <div class="qa-level">Nivel 5 · Avanzado (29 a 33)</div>
+
+  <details class="qa"><summary>29. ¿Cómo interactúan exactamente el modelo YuE2-3B y el VAE YuE2-Vae en el pipeline?</summary>
+    <p>YuE2-3B recibe el texto (letra + estilo) y genera una secuencia de latentes acústicos (representaciones numéricas comprimidas del audio). Estos latentes no son audio audible. Luego, YuE2-Vae actúa como un decodificador: toma esos latentes y los expande en una forma de onda de audio de alta fidelidad (48 kHz estéreo). Sin el VAE, los latentes no se pueden escuchar.</p>
+  </details>
+
+  <details class="qa"><summary>30. Si quiero hacer una «cover» de una canción existente, ¿qué modelo o herramienta adicional necesito?</summary>
+    <p>Para una cover, el pipeline es más complejo. Necesitas primero extraer la melodía y la estructura de la canción original. La documentación de YuE2 menciona el uso de SheetSage2 (que a su vez carga MERT-v2-FullSong) para convertir el audio en una partitura (formato ABC) y obtener la melodía. Luego, usas YuE2-3B con cot="melody" y la letra deseada para generar una nueva versión manteniendo la melodía original. Finalmente, YuE2-Vae renderiza el audio.</p>
+  </details>
+
+  <details class="qa"><summary>31. ¿Qué significa que YuE2 sea un modelo de «caja blanca» en comparación con otros modelos de «caja negra»?</summary>
+    <p>Significa que YuE2 expone pasos intermedios interpretables (como la planificación simbólica o los latentes acústicos) que un usuario avanzado puede inspeccionar o modificar. En los modelos de «caja negra», solo obtienes el audio final y no tienes control sobre el proceso. En YuE2, la separación entre planificación y renderización permite editar la partitura intermedia antes de generar el audio final, lo que ofrece un control mucho mayor.</p>
+  </details>
+
+  <details class="qa"><summary>32. He visto que existen repositorios como YuEGP o YuE-exllamav2. ¿Son oficiales?</summary>
+    <p>No. YuEGP (YuE for the GPU Poor) y YuE-exllamav2 son proyectos de la comunidad, no oficiales. Ofrecen optimizaciones para GPUs con poca VRAM (como perfiles de cuantización más agresivos) o mejoras de velocidad, pero no están mantenidos por el equipo oficial de multimodal-art-projection. Úsalos bajo tu propia responsabilidad y verifica que su código sea compatible con la versión de YuE2 que estés utilizando. El tutorial se basa en el repositorio oficial.</p>
+  </details>
+
+  <details class="qa"><summary>33. ¿Cómo puedo contribuir al proyecto o reportar un error de forma efectiva?</summary>
+    <p>La mejor forma es abrir un Issue en el repositorio oficial de GitHub: <a href="https://github.com/multimodal-art-projection/YuE/issues" rel="noopener">github.com/multimodal-art-projection/YuE/issues</a>. Antes de abrirlo, busca si alguien ya reportó el mismo problema. Al crear el issue, incluye: tu sistema operativo y versión, tu GPU y VRAM, la versión de Python y PyTorch (python -c "import torch; print(torch.__version__)"), el comando exacto que ejecutaste, el mensaje de error completo y los pasos que seguiste. Cuanta más información técnica proporciones, más fácil será para los desarrolladores ayudarte.</p>
+  </details>
+</section>
+
+<!-- ============================================================
+     ERRORES
+     ============================================================ -->
+<section class="page" id="p-errores" data-t="Errores">
+  <div class="sec-head"><h2>Solución de problemas y mantenimiento</h2></div>
+  <p class="lead">Diagnóstico de los fallos más frecuentes y rutinas de actualización seguras.</p>
+
+  <h3>A · torch.cuda.is_available() devuelve False</h3>
+  <ul>
+    <li><b>Síntoma:</b> PyTorch no detecta tu GPU.</li>
+    <li><b>Causa:</b> controladores NVIDIA desactualizados, PyTorch instalado sin CUDA o WSL2 sin acceso a la GPU.</li>
+    <li><b>Solución:</b>
+      <ol>
+        <li>Verifica que <code>nvidia-smi</code> funciona en tu terminal. Si no, instala o actualiza los controladores NVIDIA.</li>
+        <li>Reinstala PyTorch con la compilación CUDA correcta. Para CUDA 12.8: <code>pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128</code>.</li>
+        <li>En WSL2, comprueba con <code>wsl -l -v</code> que la columna VERSION sea 2 (no 1).</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h3>B · CUDA out of memory (OOM)</h3>
+  <ul>
+    <li><b>Síntoma:</b> el script se detiene con <code>OutOfMemoryError</code> o <code>CUDA out of memory</code>.</li>
+    <li><b>Causa:</b> la GPU no tiene suficiente VRAM para el lote o la longitud solicitados.</li>
+    <li><b>Solución:</b> aplica las estrategias de la sección Práctica: reduce <code>--stage2_batch_size</code>, usa un <code>--profile</code> más bajo o reduce <code>--run_n_segments</code>.</li>
+  </ul>
+
+  <h3>C · No module named 'yue2' o command not found: yue2-infer</h3>
+  <ul>
+    <li><b>Síntoma:</b> el comando de generación no se reconoce.</li>
+    <li><b>Causa:</b> entorno virtual no activado o instalación incompleta.</li>
+    <li><b>Solución:</b>
+      <ol>
+        <li>Asegúrate de que el prompt muestra <code>(yue2-env)</code>. Si no, ejecuta <code>source ~/yue2-env/bin/activate</code>.</li>
+        <li>Ejecuta <code>pip list | grep yue2</code>. Si no aparece, repite la instalación.</li>
+        <li>Si el paquete está instalado pero el comando no se encuentra, prueba con <code>python -m yue2.infer</code>.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h3>D · El audio generado suena distorsionado o con ruido</h3>
+  <ul>
+    <li><b>Síntoma:</b> el <code>.mp3</code> se reproduce, pero la calidad es mala.</li>
+    <li><b>Causa:</b> posible corrupción durante la decodificación VAE o contexto insuficiente.</li>
+    <li><b>Solución:</b>
+      <ol>
+        <li>Verifica que el archivo <code>YuE2-Vae</code> se descargó correctamente (tamaño completo).</li>
+        <li>Intenta generar con una letra más corta (<code>--run_n_segments 2</code>).</li>
+        <li>Asegúrate de que no estás usando un <code>--profile</code> tan bajo que cause cuantización excesiva.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h3>E · El proceso parece «colgado»</h3>
+  <ul>
+    <li><b>Síntoma:</b> la terminal no muestra progreso durante mucho tiempo.</li>
+    <li><b>Causa:</b> generación lenta (especialmente en GPUs de 16 GB o con cuantización) o bloqueo por falta de memoria sin error explícito.</li>
+    <li><b>Solución:</b>
+      <ol>
+        <li>Sé paciente. Una canción de 2 minutos puede tardar entre 5 y 15 minutos en una GPU de 16 GB.</li>
+        <li>Abre <code>nvidia-smi</code> en otra terminal. Si la GPU está al 100 % de utilización, está trabajando. Si la utilización es 0 % y la memoria está llena, puede estar bloqueado. Cancela con <kbd>Ctrl</kbd>+<kbd>C</kbd> y reduce los parámetros de memoria.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h3>Procedimiento general para errores desconocidos</h3>
+  <ol>
+    <li>Copia el mensaje de error completo.</li>
+    <li>Busca en los Issues del repositorio oficial: <a href="https://github.com/multimodal-art-projection/YuE/issues" rel="noopener">github.com/multimodal-art-projection/YuE/issues</a>.</li>
+    <li>Si no encuentras nada, abre un nuevo issue incluyendo: sistema operativo, GPU, versión de PyTorch, comando exacto y error completo.</li>
+  </ol>
+
+  <h3>Actualización y mantenimiento</h3>
+  <ul>
+    <li><b>Actualizar el código:</b> <code>pip install --upgrade git+https://github.com/multimodal-art-projection/YuE.git</code>. Precaución: una actualización puede traer nuevos requisitos. Lee las notas de la versión antes de actualizar.</li>
+    <li><b>Actualizar los modelos:</b> vuelve a ejecutar <code>huggingface-cli download</code> para obtener la última revisión. Si quieres conservar una versión concreta, haz copia de seguridad de <code>~/yue2-models</code>.</li>
+    <li><b>Copias de seguridad:</b> <code>tar -czvf backup_yue2.tar.gz ~/yue2-env ~/yue2-models</code>.</li>
+    <li><b>No actualices a ciegas:</b> si tu instalación actual funciona, no la actualices a menos que necesites una función nueva o un arreglo específico.</li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     RESUMEN
+     ============================================================ -->
+<section class="page" id="p-resumen" data-t="Resumen">
+  <div class="sec-head"><h2>Resumen, licencias y referencias técnicas</h2></div>
+
+  <h3>Licencias, derechos y uso responsable</h3>
+  <ul>
+    <li><b>Código:</b> YuE2 está bajo la licencia Apache 2.0, que permite uso comercial, modificación y redistribución conservando el aviso de licencia.</li>
+    <li><b>Pesos del modelo:</b> <code>YuE2-3B</code> y <code>YuE2-Vae</code> se distribuyen bajo sus propias licencias en Hugging Face. La documentación de terceros indica uso no comercial salvo autorización expresa. Revisa el <code>README.md</code> de cada modelo antes de usarlos comercialmente.</li>
+    <li><b>Contenido generado:</b> eres responsable del contenido de las letras que introduzcas. No utilices letras con derechos de autor de terceros sin permiso.</li>
+    <li><b>Voces:</b> YuE2 no está diseñado para clonar voces de personas reales. Genera una voz sintética basada en patrones aprendidos. No lo uses para suplantar identidades.</li>
+  </ul>
+
+  <h3>Diccionario técnico para principiantes</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+    <tbody>
+      <tr><td>API</td><td>Interfaz de Programación de Aplicaciones. YuE2 no expone una API web pública en su instalación local; se usa mediante línea de comandos.</td></tr>
+      <tr><td>Checkpoint</td><td>Archivo que contiene los pesos entrenados de un modelo. <code>YuE2-3B</code> es un checkpoint.</td></tr>
+      <tr><td>CUDA</td><td>Plataforma de computación paralela de NVIDIA. Permite que PyTorch y YuE2 usen la GPU.</td></tr>
+      <tr><td>Dependencia</td><td>Programa o biblioteca que otro programa necesita para funcionar. PyTorch es una dependencia de YuE2.</td></tr>
+      <tr><td>Entorno virtual</td><td>Carpeta aislada donde se instalan las dependencias de un proyecto para evitar conflictos.</td></tr>
+      <tr><td>GPU</td><td>Unidad de Procesamiento Gráfico. Hardware especializado en cálculos paralelos, ideal para modelos de IA.</td></tr>
+      <tr><td>Inferencia</td><td>Proceso de usar un modelo ya entrenado para generar una salida.</td></tr>
+      <tr><td>Latentes acústicos</td><td>Representación numérica comprimida del audio, generada por YuE2-3B. El VAE los decodifica.</td></tr>
+      <tr><td>Modelo</td><td>Archivo que contiene los conocimientos aprendidos por la IA. En YuE2, el principal es YuE2-3B.</td></tr>
+      <tr><td>OOM</td><td>Out of Memory. Error cuando la GPU se queda sin VRAM durante la ejecución.</td></tr>
+      <tr><td>Prompt</td><td>Instrucción o texto de entrada. En YuE2 incluye la letra y el estilo.</td></tr>
+      <tr><td>PyTorch</td><td>Biblioteca de código abierto para aprendizaje profundo, desarrollada por Meta.</td></tr>
+      <tr><td>Token</td><td>Unidad básica de información que procesa el modelo.</td></tr>
+      <tr><td>VAE</td><td>Variational Autoencoder. En YuE2, <code>YuE2-Vae</code> decodifica latentes acústicos en audio.</td></tr>
+      <tr><td>VRAM</td><td>Memoria de acceso aleatorio de la GPU. Recurso limitado y crucial para YuE2.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Índice maestro de comandos</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Comando</th><th>Finalidad</th><th>Capítulo</th></tr></thead>
+    <tbody>
+      <tr><td><code>lsb_release -a</code></td><td>Ver la versión de Linux</td><td>Diagnóstico</td></tr>
+      <tr><td><code>nvidia-smi</code></td><td>Ver GPU, VRAM y uso</td><td>Diagnóstico / Optimización</td></tr>
+      <tr><td><code>free -h</code></td><td>Ver memoria RAM</td><td>Diagnóstico</td></tr>
+      <tr><td><code>df -h</code></td><td>Ver espacio en disco</td><td>Diagnóstico</td></tr>
+      <tr><td><code>python3 --version</code></td><td>Ver versión de Python</td><td>Diagnóstico</td></tr>
+      <tr><td><code>git --version</code></td><td>Ver versión de Git</td><td>Diagnóstico</td></tr>
+      <tr><td><code>sudo apt update &amp;&amp; sudo apt install -y git git-lfs python3-pip python3-venv build-essential</code></td><td>Instalar herramientas básicas</td><td>Instalación · Fase 1</td></tr>
+      <tr><td><code>python3.12 -m venv ~/yue2-env</code></td><td>Crear entorno virtual</td><td>Instalación · Fase 2</td></tr>
+      <tr><td><code>source ~/yue2-env/bin/activate</code></td><td>Activar entorno virtual</td><td>Instalación · Fase 2</td></tr>
+      <tr><td><code>pip install git+https://github.com/multimodal-art-projection/YuE.git</code></td><td>Instalar YuE2 y dependencias</td><td>Instalación · Fase 3</td></tr>
+      <tr><td><code>python -c "import torch; print(torch.cuda.is_available())"</code></td><td>Verificar que PyTorch ve la GPU</td><td>Instalación · Fase 3 / Errores</td></tr>
+      <tr><td><code>huggingface-cli download m-a-p/YuE2-3B --local-dir ~/yue2-models/YuE2-3B</code></td><td>Descargar modelo principal</td><td>Modelos</td></tr>
+      <tr><td><code>huggingface-cli download m-a-p/YuE2-Vae --local-dir ~/yue2-models/YuE2-Vae</code></td><td>Descargar VAE</td><td>Modelos</td></tr>
+      <tr><td><code>python -m yue2.infer --model_path … --vae_path … --lyrics … --style … --output …</code></td><td>Generar una canción</td><td>Primera canción</td></tr>
+      <tr><td><code>watch -n 1 nvidia-smi</code></td><td>Monitorear uso de GPU en tiempo real</td><td>Optimización / Errores</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Conclusiones</h3>
+  <p>YuE2 es una herramienta potente pero exigente. Requiere una GPU NVIDIA moderna con al menos 16 GB de VRAM (24 GB recomendados) y un entorno Linux/WSL2. La instalación, aunque implica varios pasos, es reproducible siguiendo este tutorial.</p>
+  <p>La generación musical es un proceso iterativo: la calidad del resultado depende en gran medida de la calidad de las letras y de la precisión de las etiquetas de estilo. Se recomienda empezar con canciones cortas (2 segmentos), experimentar con estilos y parámetros, y aumentar la longitud y complejidad a medida que se gane experiencia.</p>
+  <div class="callout warn">
+    <strong>Limitaciones a tener en cuenta</strong>
+    Pronunciación imperfecta, dependencia de hardware específico y licencias de pesos no comerciales. Verifica la licencia antes de embarcarte en proyectos comerciales.
+  </div>
+  <p><b>Para continuar aprendiendo:</b> consulta los Issues del repositorio oficial, la documentación de Hugging Face de los modelos y experimenta con los proyectos prácticos. La comunidad de YuE en Discord (enlazada en el repositorio) es un buen lugar para resolver dudas específicas.</p>
+</section>
+
+<!-- ============================================================
+     FUENTES
+     ============================================================ -->
+<section class="page" id="p-fuentes" data-t="Fuentes">
+  <div class="sec-head"><h2>Fuentes y referencias</h2></div>
+  <p class="lead">Documentación consultada para elaborar este tutorial. Toda la información técnica se ha contrastado con la rama <code>main</code> del repositorio oficial.</p>
+
+  <div class="card">
+    <h3>Fuentes principales</h3>
+    <ul>
+      <li>Repositorio oficial de YuE (rama <code>main</code> y rama <code>YuE-v1</code>):<br><a href="https://github.com/multimodal-art-projection/YuE" rel="noopener">github.com/multimodal-art-projection/YuE</a></li>
+      <li>Documentación de modelos y setup de YuE2 (archivo <code>skills/yue2-music/references/models-and-setup.md</code> en el repositorio oficial).</li>
+      <li>Documentación de la interfaz de línea de comandos (basada en <code>infer.py</code> y la documentación de DeepWiki para YuE).</li>
+      <li>Requisitos de hardware y perfiles de memoria (documentación de DeepWiki y pruebas de terceros verificadas).</li>
+      <li>Artículo de HKGAI sobre el lanzamiento de YuE2 (contexto y capacidades).</li>
+      <li>Documentación original de YuE-v1 (README en la rama <code>YuE-v1</code>) para contexto histórico.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Modelos en Hugging Face</h3>
+    <ul>
+      <li><code>m-a-p/YuE2-3B</code> — modelo principal.</li>
+      <li><code>m-a-p/YuE2-Vae</code> — decodificador VAE.</li>
+      <li><code>SheetSage2</code> y <code>MERT-v2-FullSong</code> — opcionales, para covers y edición avanzada.</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <strong>Nota de verificación</strong>
+    Los procedimientos, comandos y parámetros de este tutorial han sido contrastados con la documentación y los archivos de la rama <code>main</code> del repositorio oficial. Los nombres exactos de módulos y argumentos pueden variar según la versión del paquete instalado; en ese caso, consulta el <code>--help</code> del paquete o el <code>README.md</code> correspondiente.
+  </div>
+</section>
+
+<!-- ============================================================
+     CRÉDITOS
+     ============================================================ -->
+<section class="page" id="p-creditos" data-t="Créditos">
+  <div class="sec-head"><h2>Créditos</h2></div>
+
+  <div class="hero" id="hero-credits"></div>
+
+  <p style="color:var(--muted);margin-top:16px">Ilustración animada: un núcleo de inteligencia artificial en el centro emite ondas sonoras y notas musicales mientras una red neuronal de planificación simbólica lo rodea. Representa el pipeline de dos etapas de YuE2: planificación y renderización acústica.</p>
+
+  <div class="credits-name">Rubén Sbarsky</div>
+  <p class="credits-role">Autor del tutorial</p>
+
+  <div class="meta">
+    <div><b>Proyecto:</b> YuE2 · Tutorial completo para principiantes</div>
+    <div><b>Repositorio oficial:</b> <a href="https://github.com/multimodal-art-projection/YuE" rel="noopener">multimodal-art-projection/YuE</a></div>
+    <div><b>Versión del documento:</b> V001</div>
+    <div><b>Fecha de creación:</b> 28/10/2026 — 13:05:05</div>
+    <div><b>Licencia del código:</b> Apache 2.0 (los pesos de los modelos tienen sus propias condiciones)</div>
+  </div>
+
+  <div class="callout">
+    <strong>Sobre este documento</strong>
+    Tutorial elaborado a partir del manual «YuE: Manual definitivo para principiantes» y de la documentación oficial del repositorio. La versión actual documentada es YuE2 (rama <code>main</code>).
+  </div>
+</section>
+
+</main>
+
+<button id="top" type="button" aria-label="Volver arriba">↑</button>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ========================================================================
+     Plantilla SVG compartida (una sola fuente para INICIO y CRÉDITOS)
+     ======================================================================== */
+  var SVG_TPL = (function(){
+    var bars = '';
+    for(var i = 0; i < 14; i++){
+      bars += '<rect x="' + (20 + i * 26) + '" y="-18" width="8" height="18" fill="url(#__P__-bar)" class="y2-bar" style="animation-delay:' + (i * 0.09).toFixed(2) + 's"/>';
+    }
+    var parts = '';
+    var pts = [[60,390],[95,350],[140,420],[260,400],[300,340],[340,410],[80,440],[320,440],[180,440],[220,450]];
+    for(var j = 0; j < pts.length; j++){
+      var p = pts[j];
+      parts += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (2 + (j % 3) * 0.6) + '" fill="#38bdf8" class="y2-particle" style="animation-delay:' + (j * 0.4).toFixed(1) + 's"/>';
+    }
+    return ''
+    + '<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Ilustración animada de YuE2: un núcleo de inteligencia artificial en el centro emite ondas sonoras y notas musicales mientras una red neuronal de planificación simbólica lo rodea.">'
+    + '<defs>'
+    + '<radialGradient id="__P__-bg" cx="50%" cy="42%" r="78%">'
+    +   '<stop offset="0%" stop-color="#0e2a4a"/>'
+    +   '<stop offset="55%" stop-color="#0a0e1a"/>'
+    +   '<stop offset="100%" stop-color="#050810"/>'
+    + '</radialGradient>'
+    + '<radialGradient id="__P__-glow" cx="50%" cy="50%" r="50%">'
+    +   '<stop offset="0%" stop-color="#00d4ff" stop-opacity="0.55"/>'
+    +   '<stop offset="45%" stop-color="#38bdf8" stop-opacity="0.12"/>'
+    +   '<stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>'
+    + '</radialGradient>'
+    + '<linearGradient id="__P__-core" x1="0" y1="0" x2="1" y2="1">'
+    +   '<stop offset="0%" stop-color="#38bdf8"/>'
+    +   '<stop offset="50%" stop-color="#a855f7"/>'
+    +   '<stop offset="100%" stop-color="#00d4ff"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="__P__-ring" x1="0" y1="0" x2="1" y2="0">'
+    +   '<stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>'
+    +   '<stop offset="50%" stop-color="#00d4ff" stop-opacity="0.9"/>'
+    +   '<stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="__P__-wave" x1="0" y1="0" x2="1" y2="0">'
+    +   '<stop offset="0%" stop-color="#00d4ff" stop-opacity="0"/>'
+    +   '<stop offset="20%" stop-color="#38bdf8" stop-opacity="0.9"/>'
+    +   '<stop offset="80%" stop-color="#a855f7" stop-opacity="0.9"/>'
+    +   '<stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="__P__-bar" x1="0" y1="1" x2="0" y2="0">'
+    +   '<stop offset="0%" stop-color="#a855f7"/>'
+    +   '<stop offset="100%" stop-color="#38bdf8"/>'
+    + '</linearGradient>'
+    + '<filter id="__P__-glowf" x="-50%" y="-50%" width="200%" height="200%">'
+    +   '<feGaussianBlur stdDeviation="2.5" result="b"/>'
+    +   '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>'
+    + '</filter>'
+    + '</defs>'
+    + '<style>'
+    + '@keyframes y2-pulseOp{0%,100%{opacity:.6}50%{opacity:1}}'
+    + '@keyframes y2-noteAnim{0%{transform:translate(0,0);opacity:0}12%{opacity:.95}55%{transform:translate(-10px,-90px);opacity:.8}100%{transform:translate(6px,-180px);opacity:0}}'
+    + '@keyframes y2-barAnim{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}'
+    + '@keyframes y2-waveMove{0%{transform:translateX(0)}100%{transform:translateX(-80px)}}'
+    + '@keyframes y2-blink{0%,100%{opacity:.35}50%{opacity:1}}'
+    + '@keyframes y2-particle{0%{transform:translateY(0);opacity:.15}50%{opacity:.9}100%{transform:translateY(-70px);opacity:0}}'
+    + '.y2-note{transform-box:fill-box;transform-origin:center;animation:y2-noteAnim 6s ease-out infinite}'
+    + '.y2-bar{transform-box:fill-box;transform-origin:center bottom;animation:y2-barAnim 1.4s ease-in-out infinite}'
+    + '.y2-wave{animation:y2-waveMove 4s linear infinite}'
+    + '.y2-blink{animation:y2-blink 3s ease-in-out infinite}'
+    + '.y2-particle{transform-box:fill-box;transform-origin:center;animation:y2-particle 4s ease-out infinite}'
+    + '.y2-pulse{animation:y2-pulseOp 5s ease-in-out infinite}'
+    + '</style>'
+    + '<rect width="400" height="500" fill="url(#__P__-bg)"/>'
+    + '<g opacity=".10" stroke="#38bdf8" stroke-width=".6">'
+    +   '<line x1="0" y1="100" x2="400" y2="100"/>'
+    +   '<line x1="0" y1="200" x2="400" y2="200"/>'
+    +   '<line x1="0" y1="300" x2="400" y2="300"/>'
+    +   '<line x1="0" y1="400" x2="400" y2="400"/>'
+    +   '<line x1="100" y1="0" x2="100" y2="500"/>'
+    +   '<line x1="200" y1="0" x2="200" y2="500"/>'
+    +   '<line x1="300" y1="0" x2="300" y2="500"/>'
+    + '</g>'
+    + '<circle cx="200" cy="200" r="150" fill="url(#__P__-glow)" class="y2-pulse"/>'
+    + '<circle cx="200" cy="200" r="40" fill="none" stroke="url(#__P__-ring)" stroke-width="1.5" opacity="0">'
+    +   '<animate attributeName="r" values="40;180" dur="4s" repeatCount="indefinite"/>'
+    +   '<animate attributeName="opacity" values=".9;0" dur="4s" repeatCount="indefinite"/>'
+    + '</circle>'
+    + '<circle cx="200" cy="200" r="40" fill="none" stroke="url(#__P__-ring)" stroke-width="1.5" opacity="0">'
+    +   '<animate attributeName="r" values="40;180" dur="4s" begin="1.33s" repeatCount="indefinite"/>'
+    +   '<animate attributeName="opacity" values=".9;0" dur="4s" begin="1.33s" repeatCount="indefinite"/>'
+    + '</circle>'
+    + '<circle cx="200" cy="200" r="40" fill="none" stroke="url(#__P__-ring)" stroke-width="1.5" opacity="0">'
+    +   '<animate attributeName="r" values="40;180" dur="4s" begin="2.66s" repeatCount="indefinite"/>'
+    +   '<animate attributeName="opacity" values=".9;0" dur="4s" begin="2.66s" repeatCount="indefinite"/>'
+    + '</circle>'
+    + '<g stroke="#38bdf8" stroke-width="1" opacity=".3">'
+    +   '<line x1="330" y1="200" x2="292" y2="292"/>'
+    +   '<line x1="292" y1="292" x2="200" y2="330"/>'
+    +   '<line x1="200" y1="330" x2="108" y2="292"/>'
+    +   '<line x1="108" y1="292" x2="70" y2="200"/>'
+    +   '<line x1="70" y1="200" x2="108" y2="108"/>'
+    +   '<line x1="108" y1="108" x2="200" y2="70"/>'
+    +   '<line x1="200" y1="70" x2="292" y2="108"/>'
+    +   '<line x1="292" y1="108" x2="330" y2="200"/>'
+    + '</g>'
+    + '<g stroke="#00d4ff" stroke-width="1" opacity=".45">'
+    +   '<line x1="200" y1="200" x2="330" y2="200"/>'
+    +   '<line x1="200" y1="200" x2="292" y2="292"/>'
+    +   '<line x1="200" y1="200" x2="200" y2="330"/>'
+    +   '<line x1="200" y1="200" x2="108" y2="292"/>'
+    +   '<line x1="200" y1="200" x2="70" y2="200"/>'
+    +   '<line x1="200" y1="200" x2="108" y2="108"/>'
+    +   '<line x1="200" y1="200" x2="200" y2="70"/>'
+    +   '<line x1="200" y1="200" x2="292" y2="108"/>'
+    + '</g>'
+    + '<g fill="#38bdf8" filter="url(#__P__-glowf)">'
+    +   '<circle cx="330" cy="200" r="5" class="y2-blink"/>'
+    +   '<circle cx="292" cy="292" r="5" class="y2-blink" style="animation-delay:.4s"/>'
+    +   '<circle cx="200" cy="330" r="5" class="y2-blink" style="animation-delay:.8s"/>'
+    +   '<circle cx="108" cy="292" r="5" class="y2-blink" style="animation-delay:1.2s"/>'
+    +   '<circle cx="70" cy="200" r="5" class="y2-blink" style="animation-delay:1.6s"/>'
+    +   '<circle cx="108" cy="108" r="5" class="y2-blink" style="animation-delay:2s"/>'
+    +   '<circle cx="200" cy="70" r="5" class="y2-blink" style="animation-delay:2.4s"/>'
+    +   '<circle cx="292" cy="108" r="5" class="y2-blink" style="animation-delay:2.8s"/>'
+    + '</g>'
+    + '<circle r="2.5" fill="#00d4ff">'
+    +   '<animateMotion dur="3s" repeatCount="indefinite" path="M200,200 L330,200"/>'
+    + '</circle>'
+    + '<circle r="2.5" fill="#a855f7">'
+    +   '<animateMotion dur="3s" begin=".8s" repeatCount="indefinite" path="M200,200 L108,292"/>'
+    + '</circle>'
+    + '<circle r="2.5" fill="#38bdf8">'
+    +   '<animateMotion dur="3s" begin="1.6s" repeatCount="indefinite" path="M200,200 L200,70"/>'
+    + '</circle>'
+    + '<circle r="2.5" fill="#00d4ff">'
+    +   '<animateMotion dur="3s" begin="2.4s" repeatCount="indefinite" path="M200,200 L292,108"/>'
+    + '</circle>'
+    + '<g transform="translate(200,200)">'
+    +   '<g>'
+    +     '<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="18s" repeatCount="indefinite"/>'
+    +     '<circle r="52" fill="none" stroke="url(#__P__-ring)" stroke-width="1.5" stroke-dasharray="8 6" opacity=".7"/>'
+    +   '</g>'
+    +   '<g>'
+    +     '<animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="24s" repeatCount="indefinite"/>'
+    +     '<circle r="64" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="3 9" opacity=".5"/>'
+    +   '</g>'
+    + '</g>'
+    + '<circle cx="200" cy="200" r="34" fill="url(#__P__-core)" opacity=".85" filter="url(#__P__-glowf)"/>'
+    + '<circle cx="200" cy="200" r="20" fill="#0a0e1a" opacity=".85"/>'
+    + '<circle cx="200" cy="200" r="14" fill="#00d4ff" filter="url(#__P__-glowf)" class="y2-pulse"/>'
+    + '<g font-family="Georgia,serif" font-size="26" fill="#38bdf8">'
+    +   '<g class="y2-note"><text x="110" y="130">♪</text></g>'
+    +   '<g class="y2-note" style="animation-delay:1.2s" fill="#a855f7"><text x="290" y="140">♫</text></g>'
+    +   '<g class="y2-note" style="animation-delay:2.4s" fill="#00d4ff"><text x="130" y="380">♬</text></g>'
+    +   '<g class="y2-note" style="animation-delay:3.6s"><text x="280" y="390">♩</text></g>'
+    + '</g>'
+    + '<g transform="translate(0,425)" opacity=".85">'
+    +   '<path d="M-80,20 Q-60,0 -40,20 T0,20 T40,20 T80,20 T120,20 T160,20 T200,20 T240,20 T280,20 T320,20 T360,20 T400,20 T440,20 T480,20" fill="none" stroke="url(#__P__-wave)" stroke-width="2" class="y2-wave"/>'
+    + '</g>'
+    + '<g transform="translate(0,462)">' + bars + '</g>'
+    + '<g>' + parts + '</g>'
+    + '</svg>';
+  })();
+
+  var svgCounter = 0;
+  function mountSVG(container){
+    if(!container) return;
+    if(container.querySelector('svg')) return;
+    var prefix = 'svg' + (++svgCounter);
+    container.innerHTML = SVG_TPL.replace(/__P__/g, prefix);
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      var svg = container.querySelector('svg');
+      if(svg && typeof svg.pauseAnimations === 'function'){
+        try{ svg.pauseAnimations(); }catch(e){}
+      }
+    }
+  }
+
+  /* ========================================================================
+     Persistencia segura
+     ======================================================================== */
+  var store = {
+    get: function(k, d){
+      try{ var v = localStorage.getItem(k); return v === null ? d : v; }
+      catch(e){ return d; }
+    },
+    set: function(k, v){
+      try{ localStorage.setItem(k, v); }catch(e){}
+    }
+  };
+
+  /* ========================================================================
+     Tema y tamaño de letra
+     ======================================================================== */
+  var themeBtn = document.getElementById('theme');
+  var currentTheme = store.get('yue-theme', 'dark');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    themeBtn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+    store.set('yue-theme', t);
+  }
+  applyTheme(currentTheme);
+  themeBtn.addEventListener('click', function(){
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+  });
+
+  var currentFS = parseInt(store.get('yue-fs', '16'), 10) || 16;
+  function applyFS(v){
+    currentFS = Math.max(13, Math.min(22, v));
+    document.documentElement.style.setProperty('--fs', currentFS + 'px');
+    store.set('yue-fs', currentFS);
+  }
+  applyFS(currentFS);
+  document.getElementById('font-minus').addEventListener('click', function(){ applyFS(currentFS - 1); });
+  document.getElementById('font-plus').addEventListener('click', function(){ applyFS(currentFS + 1); });
+
+  /* ========================================================================
+     Altura dinámica de la barra de navegación
+     ======================================================================== */
+  var nav = document.getElementById('nav');
+  function syncNavHeight(){
+    document.documentElement.style.setProperty('--navh', nav.offsetHeight + 'px');
+  }
+  syncNavHeight();
+  if(typeof ResizeObserver === 'function'){
+    new ResizeObserver(syncNavHeight).observe(nav);
+  } else {
+    window.addEventListener('resize', syncNavHeight);
+  }
+
+  /* ========================================================================
+     Toast
+     ======================================================================== */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('on'); }, 2400);
+  }
+
+  /* ========================================================================
+     Copiar al portapapeles
+     ======================================================================== */
+  function copiar(texto, btn){
+    var done = function(ok){
+      if(!btn) return;
+      var original = btn.dataset.label || 'COPIAR';
+      btn.textContent = ok ? '✓ COPIADO' : '⚠ COPIA MANUAL';
+      btn.classList.toggle('ok', ok);
+      setTimeout(function(){
+        btn.textContent = original;
+        btn.classList.remove('ok');
+      }, 1600);
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(texto).then(function(){ done(true); }).catch(function(){ fallback(); });
+    } else {
+      fallback();
+    }
+    function fallback(){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.setAttribute('readonly', '');
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if(ok){ done(true); }
+        else { manual(); }
+      } catch(e){ manual(); }
+    }
+    function manual(){
+      done(false);
+      try{ window.prompt('Copia manualmente el contenido:', texto); }catch(e){}
+    }
+  }
+
+  document.querySelectorAll('pre').forEach(function(pre){
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'COPIAR';
+    btn.dataset.label = 'COPIAR';
+    btn.setAttribute('aria-label', 'Copiar bloque de código');
+    wrap.appendChild(btn);
+    btn.addEventListener('click', function(){ copiar(pre.textContent, btn); });
+  });
+
+  /* ========================================================================
+     Navegación entre secciones
+     ======================================================================== */
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var chipsBox = document.getElementById('chips');
+  var dr = document.getElementById('dr');
+  var mb = document.getElementById('mb');
+  var current = 0;
+
+  // Generar chips
+  pages.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (i === 0 ? ' on' : '');
+    b.textContent = p.dataset.t || ('Sección ' + (i + 1));
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', 'Ir a ' + b.textContent);
+    b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', function(){ go(i); });
+    chipsBox.appendChild(b);
+  });
+
+  // Generar entradas del índice
+  pages.forEach(function(p, i){
+    var a = document.createElement('a');
+    a.href = '#' + p.id;
+    var title = p.dataset.t || (p.querySelector('h2') ? p.querySelector('h2').textContent : 'Sección');
+    a.textContent = (i ? i + '. ' : '') + title;
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      go(i);
+      tg(false);
+    });
+    dr.appendChild(a);
+  });
+
+  function go(i, opts){
+    i = Math.max(0, Math.min(pages.length - 1, i));
+    current = i;
+    pages.forEach(function(p, j){ p.classList.toggle('on', j === i); });
+    Array.prototype.forEach.call(chipsBox.children, function(b, j){
+      b.classList.toggle('on', j === i);
+      b.setAttribute('aria-selected', j === i ? 'true' : 'false');
+    });
+    Array.prototype.forEach.call(dr.children, function(a, j){
+      a.classList.toggle('on', j === i);
+    });
+    var page = pages[i];
+    var hero = page.querySelector('.hero');
+    if(hero && !hero.querySelector('svg')) mountSVG(hero);
+    if(!opts || opts.scroll !== false){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    try{ history.replaceState(null, '', '#' + page.id); }catch(e){}
+    store.set('yue-last', i);
+  }
+
+  /* ========================================================================
+     Panel de índice
+     ======================================================================== */
+  function tg(v){
+    var open = (typeof v === 'boolean') ? v : !dr.classList.contains('o');
+    dr.classList.toggle('o', open);
+    mb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    mb.setAttribute('aria-label', open ? 'Cerrar índice' : 'Abrir índice');
+  }
+  mb.addEventListener('click', function(){ tg(); });
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#dr, #mb, #ix')) tg(false);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') tg(false);
+  });
+
+  var ixBtn = document.getElementById('ix');
+  if(ixBtn){
+    ixBtn.addEventListener('click', function(e){ e.stopPropagation(); tg(true); });
+  }
+
+  /* ========================================================================
+     Buscador
+     ======================================================================== */
+  var searchInput = document.getElementById('search');
+  searchInput.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    e.preventDefault();
+    buscar(searchInput.value);
+  });
+
+  function buscar(q){
+    q = (q || '').trim();
+    if(q.length < 2){
+      toast('Escribe al menos 2 caracteres para buscar.');
+      return;
+    }
+    var lower = q.toLowerCase();
+    var found = -1;
+    for(var i = 0; i < pages.length; i++){
+      if((pages[i].textContent || '').toLowerCase().indexOf(lower) !== -1){
+        found = i;
+        break;
+      }
+    }
+    if(found < 0){
+      toast('Sin resultados para: ' + q);
+      return;
+    }
+    go(found, { scroll: false });
+    setTimeout(function(){
+      var ok = false;
+      if(typeof window.find === 'function'){
+        try{
+          ok = window.find(q, false, false, true, false, true, false);
+        } catch(e){ ok = false; }
+      }
+      if(!ok){ window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      toast('Encontrado en: ' + (pages[found].dataset.t || 'sección'));
+    }, 140);
+  }
+
+  /* ========================================================================
+     Barra de progreso y botón subir
+     ======================================================================== */
+  var progress = document.getElementById('progress');
+  var topBtn = document.getElementById('top');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    progress.style.width = p + '%';
+    topBtn.classList.toggle('on', h.scrollTop > 500);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  topBtn.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ========================================================================
+     Impresión
+     ======================================================================== */
+  var openStates = [];
+  function preparePrint(){
+    openStates = Array.prototype.map.call(document.querySelectorAll('details'), function(d){ return d.open; });
+    document.querySelectorAll('details').forEach(function(d){ d.open = true; });
+    mountSVG(document.getElementById('hero-home'));
+    mountSVG(document.getElementById('hero-credits'));
+  }
+  function restorePrint(){
+    Array.prototype.forEach.call(document.querySelectorAll('details'), function(d, i){
+      if(typeof openStates[i] === 'boolean'){ d.open = openStates[i]; }
+    });
+  }
+  window.addEventListener('beforeprint', preparePrint);
+  window.addEventListener('afterprint', restorePrint);
+
+  document.getElementById('print').addEventListener('click', function(){
+    try{
+      preparePrint();
+      window.print();
+      setTimeout(restorePrint, 300);
+    } catch(e){
+      toast('Abre este archivo en el navegador y usa Ctrl+P o Cmd+P.');
+    }
+  });
+
+  /* ========================================================================
+     Arranque: restaurar última sección o hash
+     ======================================================================== */
+  var last = parseInt(store.get('yue-last', '0'), 10) || 0;
+  var hash = (location.hash || '').replace('#', '');
+  var hashIndex = -1;
+  if(hash){
+    for(var k = 0; k < pages.length; k++){
+      if(pages[k].id === hash){ hashIndex = k; break; }
+    }
+  }
+  var initial = hashIndex >= 0 ? hashIndex : (last >= 0 && last < pages.length ? last : 0);
+
+  // Montar SVG de INICIO
+  mountSVG(document.getElementById('hero-home'));
+
+  // Ir a la sección inicial sin animación de scroll
+  go(initial, { scroll: false });
+
+  // Montar SVG de CRÉDITOS (para que la animación arranque aunque se acceda por hash)
+  if(initial === pages.length - 1){
+    mountSVG(document.getElementById('hero-credits'));
+  }
+
+  // Comprobación periódica: reparar hero vacío si la pestaña está visible
+  setInterval(function(){
+    var homeHero = document.getElementById('hero-home');
+    if(homeHero && homeHero.offsetParent !== null && !homeHero.querySelector('svg')){
+      mountSVG(homeHero);
+    }
+    var credHero = document.getElementById('hero-credits');
+    if(credHero && credHero.offsetParent !== null && !credHero.querySelector('svg')){
+      mountSVG(credHero);
+    }
+  }, 1200);
+
+})();
+</script>
+</body>
+</html>
